@@ -86,19 +86,19 @@ head(ATrain)
 #1st Round
 #no marital
 knnModel = train(y ~ . -marital, 
-                 data = ATrain, method = "knn", trControl=trainControl(method='none'), tuneGrid=data.frame(k=20))
+                 data = ATrain, method = "knn", trControl=trainControl(method='none'), tuneGrid=data.frame(k=3))
 ATestPrediction = predict(knnModel, ATest)
 confusionMatrix(ATestPrediction, ATest$y)
 #2nd Round#
 #no default#
 knnModel = train(y ~ . - marital - default, 
-                 data = ATrain, method = "knn", trControl=trainControl(method='none'), tuneGrid=data.frame(k=20))
+                 data = ATrain, method = "knn", trControl=trainControl(method='none'), tuneGrid=data.frame(k=3))
 ATestPrediction = predict(knnModel, ATest)
 confusionMatrix(ATestPrediction, ATest$y)
 #3rd Round#
 #no contact#
 knnModel = train(y ~ . -marital - default - contact, 
-                 data = ATrain, method = "knn", trControl=trainControl(method='none'), tuneGrid=data.frame(k=20))
+                 data = ATrain, method = "knn", trControl=trainControl(method='none'), tuneGrid=data.frame(k=3))
 ATestPrediction = predict(knnModel, ATest)
 confusionMatrix(ATestPrediction, ATest$y)
 
@@ -107,9 +107,20 @@ confusionMatrix(ATestPrediction, ATest$y)
 library(glmnet)
 library(mlbench)
 library(glmnetUtils)
-lr = glmnet(y ~ duration + campaign + poutcome, data = ATrain, family = "binomial")
+#Baseline
+lr = glmnet(y ~ .-marital, data = ATrain, family = "binomial")
 prediction = predict(lr, ATest, type = "class", s = 0.01)
 confusionMatrix(prediction, ATest$y)
+
+#3rd round
+lr = glmnet(y ~ . -month-default-duration, data = ATrain, family = "binomial")
+lr = glmnet(y ~ . -month-default-education, data = ATrain, family = "binomial")
+lr = glmnet(y ~ . -month-default-housing, data = ATrain, family = "binomial")
+lr = glmnet(y ~ . -month-default-loan, data = ATrain, family = "binomial")
+lr = glmnet(y ~ . -month-default-marital, data = ATrain, family = "binomial")
+lr = glmnet(y ~ . -month-default-poutcome, data = ATrain, family = "binomial")
+lr = glmnet(y ~ . -month-default-job, data = ATrain, family = "binomial")
+lr = glmnet(y ~ . -month-default-contact, data = ATrain, family = "binomial")
 
 
 #Build Decision Tree#
